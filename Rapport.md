@@ -91,3 +91,7 @@ if 0 <= datetime.fromisoformat(timestamp.replace("Z", "")).hour < 5:
 5. Intégration Prometheus / Grafana pour les métriques
 6. Planification de backup automatique (ex: cron + mongodump)
 
+## 5. Audit et sécurité
+
+
+
