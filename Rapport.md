@@ -21,12 +21,86 @@ secure-logging-system/
 ├── insert_logs.py          # Générateur de logs classiques
 ├── test_anomaly.py         # Générateur de logs anormaux (test)
 ├── anomaly_detection.py    # Détection d'anomalies via console
+├── backup_mongodb.py       # Backup des logs
+├── logs_generator.py
+├── import_csv.py           # Mettre en place le CSV de mongodb (docker file)
+├── creation_admin.py   
 ├── templates/              # Templates HTML (Flask)
-├── Dockerfile              # Image Docker de l'application
-├── docker-compose.yml      # Stack Flask + MongoDB
+│   ├── home.html
+│   ├── api.html
+│   └── dashboard.html
+├── requirements.txt
+├── Dockerfile
+├── docker-compose.yml
 ├── .env                    # Variables d'environnement MongoDB
+└── README.md
 ```
+### api.py 
 
+### db_connector.py 
+
+### insert_logs.py 
+
+### test_anomaly.py 
+
+### anomaly_detection.py
+
+### backup_mongodb.py
+
+### logs_generator.py
+
+### import_csv.py
+
+### creation_admin.py
+
+### templates
+
+- home.html
+
+- api.html
+
+- dashboard.html
+
+
+```
+                          ┌─────────────────────────────┐
+                          │        Interface Flask       │
+                          │     (api.py + templates)     │
+                          │          port 5000           │
+                          └──────────────┬───────────────┘
+                                         │
+                                         ▼
+                   Utilisateur ←→ [Filtrage / Dashboard / Export CSV]
+
+                                         │
+                                         ▼
+                   ┌─────────────────────────────┐
+                   │         MongoDB             │
+                   │    (localhost:27017 ou      │
+                   │     service Docker mongo)   │
+                   └──────────────┬──────────────┘
+                                  │
+          ┌───────────────────────┴────────────────────────────┐
+          │                                                    │
+          ▼                                                    ▼
+
+ [insert_logs.py]                                    [test_anomaly.py]
+ Génère des logs valides                            Génère des logs anormaux
+
+          ▼                                                    ▼
+
+                ┌───────────────────────────────┐
+                │  Collection : secure_logs.logs │
+                └──────────────┬────────────────┘
+                               │
+                               ▼
+
+        ┌────────────────────────────────────────────────────┐
+        │ Scripts d’analyse offline                          │
+        │  ├── anomaly_detection.py  ← détection manuelle     │
+        │  └── integrity_check.py     ← vérifie les HMAC      │
+        └────────────────────────────────────────────────────┘
+```
 ---
 
 ## 2. Justification des choix techniques
