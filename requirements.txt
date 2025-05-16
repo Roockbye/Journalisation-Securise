@@ -1,5 +1,5 @@
 pymongo
 flask
 python-dotenv
-
-membre du groupe: 
+flask[debug]
+ 

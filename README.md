@@ -27,8 +27,9 @@ secure-logging-system/
 ├── insert_logs.py          # Générateur de logs classiques
 ├── test_anomaly.py         # Générateur de logs anormaux (test)
 ├── anomaly_detection.py    # Détection d'anomalies via console
-├── backup_mongodb.py
+├── backup_mongodb.py       # Backup des logs
 ├── logs_generator.py
+├── import_csv.py           # Mettre en place le CSV de mongodb (docker file)
 ├── creation_admin.py   
 ├── templates/              # Templates HTML (Flask)
 │   ├── home.html
