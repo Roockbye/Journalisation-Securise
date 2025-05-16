@@ -144,4 +144,5 @@ Rendez-vous sur `/export` pour télécharger tous les logs au format CSV.
 ---
 
 ## 📜 Licence
+
 Projet libre et open-source dans un but d'apprentissage et de démonstration.
