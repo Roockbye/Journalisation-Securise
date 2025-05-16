@@ -2,53 +2,55 @@ from pymongo import MongoClient
 from datetime import datetime
 import re
 
-# Connexion MongoDB
 client = MongoClient("mongodb://localhost:27017/")
 collection = client["secure_logs"]["logs"]
 
+#Détecte les IP ayant provoqué >5 échecs en 10 minutes
 def detect_failed_login_bursts():
-    print(" IPs avec >5 échecs en 10 minutes :")
+    print("\n🔐 IPs avec plus de 5 échecs de connexion en 10 minutes :")
     pipeline = [
-        {"$match": { "status": "failed" }},
+        {"$match": {"status": "failed"}},
         {"$project": {
             "ip": 1,
-            "timestamp": {
-                "$dateFromString": { "dateString": "$timestamp" }
-            }
+            "timestamp": {"$dateFromString": {"dateString": "$timestamp"}}
         }},
         {"$group": {
             "_id": {
                 "ip": "$ip",
-                "minute": { "$dateTrunc": {
+                "minute": {"$dateTrunc": {
                     "date": "$timestamp",
                     "unit": "minute",
                     "binSize": 10
                 }}
             },
-            "count": { "$sum": 1 }
+            "count": {"$sum": 1}
         }},
-        {"$match": { "count": { "$gt": 5 } }},
-        {"$sort": { "count": -1 }}
+        {"$match": {"count": {"$gt": 5}}},
+        {"$sort": {"count": -1}}
     ]
 
     results = collection.aggregate(pipeline)
     for res in results:
         ip = res["_id"]["ip"]
-        ts = res["_id"]["minute"].isoformat()
+        start_time = res["_id"]["minute"].isoformat()
         count = res["count"]
-        print(f" - {ip} → {count} échecs entre {ts} et +10min")
+        print(f" - {ip} → {count} échecs entre {start_time} et +10min")
 
+
+#Détecte les connexions provenant de plages IP inconnues (hors 10.0.x.x)
 def detect_unknown_ip_ranges():
-    print("\n Connexions depuis des IP hors plage 10.0.x.x :")
-    pattern = re.compile(r"^10\.0\.\d{1,3}\.\d{1,3}$")
+    print("\n🌐 IPs hors plage autorisée (10.0.x.x) :")
+    allowed_pattern = re.compile(r"^10\\.0\\.\\d{1,3}\\.\\d{1,3}$")
 
     ips = collection.distinct("ip")
     for ip in ips:
-        if not pattern.match(ip):
-            print(f" - IP inconnue : {ip}")
+        if not allowed_pattern.match(ip):
+            print(f" - IP suspecte : {ip}")
 
+
+#Détecte les accès ayant lieu entre minuit et 5h du matin UTC
 def detect_suspicious_hours():
-    print("\n Accès à des heures inhabituelles (0h–5h UTC) :")
+    print("\n⏰ Accès détectés à des heures inhabituelles (entre 00h et 05h UTC) :")
     logs = collection.find({}, {"ip": 1, "timestamp": 1})
     for log in logs:
         try:
@@ -58,6 +60,8 @@ def detect_suspicious_hours():
         except Exception as e:
             print(f"Erreur horodatage : {log.get('timestamp')} → {e}")
 
+
+#Lancement
 if __name__ == "__main__":
     detect_failed_login_bursts()
     detect_unknown_ip_ranges()
