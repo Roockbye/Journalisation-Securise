@@ -1,100 +1,103 @@
-# Système de Journalisation Sécurisée
+# 🛡️ Système de Journalisation Sécurisée avec Flask & MongoDB
 
-## Architecture choisie
+Ce projet est une application pédagogique de journalisation sécurisée en Python, construite avec Flask et MongoDB. Il permet de collecter, stocker, afficher, analyser et exporter des logs de sécurité tout en assurant leur intégrité.
 
-Le système repose sur une architecture simple, modulaire et sécurisée :
+---
 
+## 📦 Fonctionnalités
 
-- MongoDB pour stocker les logs au format JSON, localement, avec authentification.
+-  Ingestion de logs au format JSON
+-  Hachage d'intégrité (HMAC-SHA256)
+-  Stockage NoSQL dans MongoDB
+-  Affichage filtrable via interface web (Flask + Bootstrap)
+-  Détection d'anomalies :
+    - Connexions anormales (heures / IPs)
+    - Rafales d'échecs de connexion
+-  Export CSV des logs
+-  Dashboard avec graphiques (Chart.js)
 
+---
 
-- Python pour l’ingestion des logs, leur hachage (SHA-256) et l’analyse d’anomalies.
-
-
-- Flask pour créer une interface web de visualisation et une API REST.
-
-
-- MongoDB Compass pour l’administration manuelle de la base.
-
-
-- Sauvegardes automatisées avec mongodump + script Python.
-
-
-L’ensemble est exécuté en local (localhost), sécurisé via l’authentification MongoDB, et facilement portable sur un serveur.
-Justification des choix techniques
-
-
-	 	 	 	 	 	
-
-
-
-Requêtes utilisées pour l’analyse
-
-
-Détection de brute-force (≥5 échecs en 10 min)
+## 🗂 Structure
 
 ```
-collection.aggregate([
-  {"$match": {"status": "failed"}},
-  {"$project": {
-	"ip": 1,
-	"timestamp": { "$dateFromString": { "dateString": "$timestamp" } }
-  }},
-  {"$group": {
-	"_id": {
-  	"ip": "$ip",
-  	"minute": { "$dateTrunc": { "date": "$timestamp", "unit": "minute", "binSize": 10 } }
-	},
-	"count": {"$sum": 1}
-  }},
-  {"$match": {"count": {"$gt": 5}}},
-  {"$sort": {"count": -1}}
-])
+secure-logging-system/
+├── api.py                  # API Flask principale
+├── db_connector.py         # Connexion MongoDB (via .env)
+├── insert_logs.py          # Générateur de logs classiques
+├── test_anomaly.py         # Générateur de logs anormaux (test)
+├── anomaly_detection.py    # Détection d'anomalies via console
+├── templates/              # Templates HTML (Flask)
+│   ├── home.html
+│   ├── logs.html
+│   └── dashboard.html
+├── .env                    # Variables d'environnement MongoDB
+└── README.md
 ```
 
-IP hors plage interne autorisée (10.0.x.x)
+---
 
-Filtrage via Python : 
-```regex r"^10\.0\.\d{1,3}\.\d{1,3}$"```
+## 🚀 Installation & Exécution
 
-Accès entre 00h et 05h UTC (heure suspecte)
+### 1. Clone & installe les dépendances
+```bash
+git clone https://github.com/Roockbye/Journalisation-Securise.git
+cd secure-logging-system
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
-Python : ```datetime.fromisoformat(log["timestamp"]).hour < 5```
+### 2. Crée un fichier `.env`
+A adapter selon les utilisateurs que vous souhaitez créer
+```
+MONGO_URI=mongodb://localhost:27017/
+MONGO_USER=admin
+MONGO_PASS=motdepasse
+```
 
-## Propositions d’amélioration ou d’extension
+### 3. Lance l'API Flask
+```bash
+python api.py
+```
+Accessible sur : [http://localhost:5000](http://localhost:5000)
 
-### Sécurité
+### 4. (Optionnel) Génére des logs (pour test)
+```bash
+python insert_logs.py       # Génère des logs "normaux"
+python test_anomaly.py      # Génère 3 types d'anomalies
+python anomaly_detection.py # Affiche les anomalies en CLI
+```
 
-Ajouter une signature HMAC pour éviter les altérations même avec accès à la base.
+---
+
+## 📊 Dashboard
+Accès à `/dashboard` pour visualiser :
+- Statuts de logs (succès/échecs)
+- Heures d'activité
+- Top IPs avec échecs
+
+---
+
+## 📤 Export CSV
+Rendez-vous sur `/export` pour télécharger tous les logs au format CSV.
+
+---
+
+## 📚 Objectifs
+
+- Comprendre la journalisation sécurisée
+- Manipuler MongoDB & Flask
+- Pratiquer l'analyse de logs et détection d'anomalies
+- Visualiser les données de sécurité en temps réel
+
+---
+
+## 👩‍💻 Membres du projet
 
 
-Chiffrer les logs sensibles (ex. IP, utilisateur) avec une clé symétrique stockée ailleurs.
 
+---
 
-### Déploiement
-
-Conteneuriser l'application avec Docker.
-
-
-Ajouter une authentification sur l’interface Flask (JWT, login).
-
-
-### Analyse
-Intégrer un mote
-ur de corrélation plus puissant (ex : ElasticSearch + Kibana).
-
-
-Générer des rapports PDF automatiquement des anomalies détectées.
-
-
-### Machine Learning
-
-Détecter des anomalies comportementales sur base de modèles (profil normal par utilisateur/IP/action).
-
-
-### Résilience
-
-Mettre en place un système de sauvegarde distant chiffré.
-
-
-Activer la réplication MongoDB pour tolérance aux pannes.
+## 📜 Licence
+Projet libre et open-source dans un but d'apprentissage et de démonstration.
