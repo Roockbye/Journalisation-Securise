@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Accueil - Journalisation Sécurisée</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: radial-gradient(circle at center, #e3f2fd, #90caf9);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .card {
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      animation: fadeIn 1s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .btn {
+      transition: all 0.3s ease;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+<div class="card text-center">
+  <h1 class="mb-4">Bienvenue sur le Système de Journalisation</h1>
+  <p class="mb-4 text-muted">Surveillez, analysez et exportez vos logs de manière simple et visuelle.</p>
+  <div class="d-grid gap-3">
+    <a href="/logs" class="btn btn-primary">Consulter les Logs</a>
+    <a href="/dashboard" class="btn btn-success">Voir le Dashboard</a>
+    <a href="/export" class="btn btn-outline-secondary">Exporter en CSV</a>
+  </div>
+</div>
+</body>
+</html>

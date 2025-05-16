@@ -27,10 +27,16 @@ secure-logging-system/
 ├── insert_logs.py          # Générateur de logs classiques
 ├── test_anomaly.py         # Générateur de logs anormaux (test)
 ├── anomaly_detection.py    # Détection d'anomalies via console
+├── backup_mongodb.py
+├── logs_generator.py
+├── creation_admin.py   
 ├── templates/              # Templates HTML (Flask)
 │   ├── home.html
-│   ├── logs.html
+│   ├── api.html
 │   └── dashboard.html
+├── requirements.txt
+├── Dockerfile
+├── docker-compose.yml
 ├── .env                    # Variables d'environnement MongoDB
 └── README.md
 ```
@@ -67,6 +73,29 @@ Accessible sur : [http://localhost:5000](http://localhost:5000)
 python insert_logs.py       # Génère des logs "normaux"
 python test_anomaly.py      # Génère 3 types d'anomalies
 python anomaly_detection.py # Affiche les anomalies en CLI
+```
+---
+
+## 🐳 Utilisation avec Docker
+
+### 1. Crée un fichier `.env` pour MongoDB
+```
+MONGO_USER=admin
+MONGO_PASS=password
+MONGO_URI=mongodb://mongo:27017/
+```
+
+### 2. Build & lance les services
+```bash
+docker-compose up --build
+```
+
+- Accès API : http://localhost:5000
+- MongoDB tourne sur le conteneur `mongo` (port 27017 exposé)
+
+### 3. Insère des logs dans le conteneur (optionnel)
+```bash
+docker exec -it secure-logging-api python insert_logs.py
 ```
 
 ---
