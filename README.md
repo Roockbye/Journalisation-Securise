@@ -86,6 +86,7 @@ MONGO_URI=mongodb://mongo:27017/
 ```
 
 ### 2. Build & lance les services
+Dans un terminal, à la racine du projet :
 ```bash
 docker-compose up --build
 ```
@@ -96,6 +97,19 @@ docker-compose up --build
 ### 3. Insère des logs dans le conteneur (optionnel)
 ```bash
 docker exec -it secure-logging-api python insert_logs.py
+```
+
+### 4.Tester l'import CSV manuellement (si tu préfères)
+
+Place secure_logs.logs.csv à la racine du projet
+
+Copie-le dans le conteneur :
+```
+docker cp secure_logs.logs.csv secure-logging-api:/app/
+```
+Exécute le script Python d’import  :
+```
+docker exec -it secure-logging-api python import_csv.py
 ```
 
 ---

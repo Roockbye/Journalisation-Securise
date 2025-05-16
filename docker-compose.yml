@@ -8,10 +8,17 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - mongo_data:/data/db
+      - ./mongo_backups:/backup
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS}
+    command: >
+      bash -c "
+        mongod --bind_ip_all --fork --logpath /var/log/mongod.log &&
+        sleep 5 &&
+        mongorestore --username=${MONGO_USER} --password=${MONGO_PASS} --authenticationDatabase=admin --db=secure_logs /backup/secure_logs &&
+        tail -f /dev/null
+      "
 
   secure-logger:
     build: .
